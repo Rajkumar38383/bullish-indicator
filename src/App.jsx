@@ -2,6 +2,8 @@
 import { useState } from 'react'
 import VoteSection from './components/VoteSection'
 import SentimentChart from './components/SentimentChart'
+import StatsDisplay from './components/StatsDisplay'
+import SentimentGauge from './components/SentimentGauge'
 
 function App() {
   const [refreshTrigger, setRefreshTrigger] = useState(0)
@@ -19,11 +21,17 @@ function App() {
 
       <main>
         <VoteSection onVote={handleVote} />
-        <SentimentChart refreshTrigger={refreshTrigger} />
+
+        <StatsDisplay refreshTrigger={refreshTrigger} />
+
+        <div className="visualization-grid">
+          <SentimentGauge refreshTrigger={refreshTrigger} />
+          <SentimentChart refreshTrigger={refreshTrigger} />
+        </div>
       </main>
 
       <footer>
-        <p>Built with ❤️ for the community</p>
+        <p>Built with ❤️ for the crypto community</p>
       </footer>
     </div>
   )

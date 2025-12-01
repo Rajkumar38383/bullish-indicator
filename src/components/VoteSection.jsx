@@ -6,12 +6,15 @@ export default function VoteSection({ onVote }) {
     const [hasVoted, setHasVoted] = useState(false)
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(null)
+    const [votedType, setVotedType] = useState(null)
 
     useEffect(() => {
         const lastVoteDate = localStorage.getItem('lastVoteDate')
+        const lastVoteType = localStorage.getItem('lastVoteType')
         const today = new Date().toISOString().split('T')[0]
         if (lastVoteDate === today) {
             setHasVoted(true)
+            setVotedType(lastVoteType)
         }
     }, [])
 
@@ -29,7 +32,9 @@ export default function VoteSection({ onVote }) {
             if (error) throw error
 
             localStorage.setItem('lastVoteDate', new Date().toISOString().split('T')[0])
+            localStorage.setItem('lastVoteType', type)
             setHasVoted(true)
+            setVotedType(type)
             if (onVote) onVote()
         } catch (err) {
             console.error('Error voting:', err)
@@ -41,16 +46,23 @@ export default function VoteSection({ onVote }) {
 
     if (hasVoted) {
         return (
-            <div className="vote-container voted">
-                <h2>Thanks for voting today!</h2>
-                <p>Come back tomorrow to share your sentiment.</p>
+            <div className={`vote-container voted ${votedType}-voted`}>
+                <div className="voted-icon">
+                    {votedType === 'bullish' ? '🎉' : '✅'}
+                </div>
+                <h2>Vote Recorded!</h2>
+                <p className="voted-message">
+                    You voted <strong>{votedType === 'bullish' ? 'Bullish 🚀' : 'Bearish 🐻'}</strong>
+                </p>
+                <p className="comeback-message">Come back tomorrow to share your sentiment again.</p>
             </div>
         )
     }
 
     return (
         <div className="vote-container">
-            <h2>How are you feeling about the market?</h2>
+            <h2 className="vote-title">How are you feeling about the market?</h2>
+            <p className="vote-subtitle">Cast your vote and see what the community thinks</p>
             {error && <p className="error-message">{error}</p>}
             <div className="vote-buttons">
                 <button
@@ -58,16 +70,21 @@ export default function VoteSection({ onVote }) {
                     onClick={() => handleVote('bullish')}
                     disabled={loading}
                 >
-                    🚀 Bullish
+                    <span className="vote-icon">🚀</span>
+                    <span className="vote-text">Bullish</span>
+                    <span className="vote-description">To the moon!</span>
                 </button>
                 <button
                     className="vote-btn bearish"
                     onClick={() => handleVote('bearish')}
                     disabled={loading}
                 >
-                    🐻 Bearish
+                    <span className="vote-icon">🐻</span>
+                    <span className="vote-text">Bearish</span>
+                    <span className="vote-description">Time to hibernate</span>
                 </button>
             </div>
+            {loading && <p className="loading-message">Submitting your vote...</p>}
         </div>
     )
 }
